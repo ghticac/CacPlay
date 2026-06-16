@@ -1,7 +1,9 @@
 *.zip
+*.rar
 Plataforma de Streaming/
 streamm.jpg
 .DS_Store
 Thumbs.db
 files/
 img/
+compactadoCACPlay/

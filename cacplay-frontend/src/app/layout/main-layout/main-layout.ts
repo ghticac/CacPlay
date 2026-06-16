@@ -12,8 +12,8 @@ import { FormsModule } from '@angular/forms';
 })
 export class MainLayout {
   
-  // 1. Variables de estado para los menús (Evita el error TS2339)
-  menuOpen = false;
+  // 1. Variables de estado para los menús (Coincide exactamente con el HTML)
+  menuAbierto = false; 
   podcastOpen = false; // Por si algún botón aún lo usa en el HTML
 
   // 2. Variable para capturar la búsqueda
@@ -23,7 +23,7 @@ export class MainLayout {
 
   // 3. Control de los desplegables (Perfil/Mobile)
   toggleMenu() {
-    this.menuOpen = !this.menuOpen;
+    this.menuAbierto = !this.menuAbierto;
   }
 
   togglePodcast() {
