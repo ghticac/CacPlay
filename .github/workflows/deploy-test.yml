@@ -36,4 +36,11 @@ jobs:
 
       - name: Verify backend health
         run: |
-          curl --fail --silent --show-error http://127.0.0.1:8088/api/health/
+          for attempt in {1..30}; do
+            if curl --fail --silent --show-error http://127.0.0.1:8088/api/health/; then
+              exit 0
+            fi
+            echo "Waiting for health endpoint... attempt $attempt"
+            sleep 5
+          done
+          exit 1
