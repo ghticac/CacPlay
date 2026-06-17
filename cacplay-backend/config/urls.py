@@ -1,11 +1,16 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+from accounts.serializers import EmailJWTTokenObtainSerializer
 from core.views import health
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+
+
+class EmailTokenObtainPairView(TokenObtainPairView):
+    serializer_class = EmailJWTTokenObtainSerializer
 
 urlpatterns = [
     path('', RedirectView.as_view(url='/admin/', permanent=True)),
@@ -18,6 +23,6 @@ urlpatterns = [
     path('api/', include('accounts.urls')),
 
     # JWT
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/', EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
