@@ -44,3 +44,4 @@ Thumbs.db
 # Agregado para subir a GitHub
 .env
 .env.local
+cacplay-frontend/src/environments/environment.ts
