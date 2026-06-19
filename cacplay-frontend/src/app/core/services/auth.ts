@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 // Expandimos la interfaz para capturar los datos que enviará el SSO
 interface LoginResponse {
@@ -14,7 +15,7 @@ interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly API_URL = 'http://localhost:8000/api';
+  private readonly API_URL = environment.apiUrl;
   private readonly ACCESS_KEY = 'access_token';
   private readonly REFRESH_KEY = 'refresh_token';
   private readonly USER_ROLE = 'user_role'; // Para persistir el rol sin llamar a perfil
