@@ -37,25 +37,26 @@ export class Home implements OnInit {
       next: (data: any) => {
         this.hero = data.hero;
         
-        // AJUSTE FILTRO NOVEDADES: Excluimos audios y podcasts de forma segura
+        // 🚨 CAMBIO TEMPORAL: Vamos a inspeccionar qué llega exactamente de la API
+        console.log('--- DATOS CRUDOS DE NOVEDADES ---', data.novedades);
+        if (data.novedades && data.novedades.length > 0) {
+          console.log('--- PRIMER ITEM DE NOVEDADES ---', data.novedades[0]);
+        }
+
         const novedadesCrudas = data.novedades || [];
         this.novedades = novedadesCrudas.filter((item: any) => {
           if (!item) return false;
-          
-          // Convertimos a minúsculas para evitar problemas de formato (ej: 'Audio' o 'AUDIO')
           const tipo = item.tipo ? String(item.tipo).toLowerCase() : '';
           const categoria = item.categoria ? String(item.categoria).toLowerCase() : '';
-
-          // Retorna true solo si NO es audio y NO es podcast
           return tipo !== 'audio' && tipo !== 'podcast' && categoria !== 'podcast';
         });
 
+        // Verificamos cuántos items quedaron tras aplicar el filtro actual
+        console.log('--- NOVEDADES FILTRADAS (RESULTADO) ---', this.novedades);
+
         this.eventos = data.eventos || [];
         this.podcasts = data.podcasts || [];
-        
-        // Cargamos Mi Lista inicialmente
         this.actualizarMiLista();
-
         this.cdr.detectChanges();
       },
       error: (err: any) => console.error('Error al obtener contenido:', err)
