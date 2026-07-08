@@ -37,12 +37,18 @@ export class Home implements OnInit {
       next: (data: any) => {
         this.hero = data.hero;
         
-        // AJUSTE PUNTO 3: Filtramos las novedades para dejar solo videos
-        // Excluimos explícitamente cualquier contenido cuyo tipo sea 'audio' o 'podcast'
+        // AJUSTE FILTRO NOVEDADES: Excluimos audios y podcasts de forma segura
         const novedadesCrudas = data.novedades || [];
-        this.novedades = novedadesCrudas.filter(
-          (item: any) => item.tipo !== 'audio' && item.tipo !== 'podcast'
-        );
+        this.novedades = novedadesCrudas.filter((item: any) => {
+          if (!item) return false;
+          
+          // Convertimos a minúsculas para evitar problemas de formato (ej: 'Audio' o 'AUDIO')
+          const tipo = item.tipo ? String(item.tipo).toLowerCase() : '';
+          const categoria = item.categoria ? String(item.categoria).toLowerCase() : '';
+
+          // Retorna true solo si NO es audio y NO es podcast
+          return tipo !== 'audio' && tipo !== 'podcast' && categoria !== 'podcast';
+        });
 
         this.eventos = data.eventos || [];
         this.podcasts = data.podcasts || [];
