@@ -5,21 +5,21 @@
     <div class="lg:col-span-2">
 
       <div [class.aspect-video]="tipoContenido === 'video'" 
-           class="bg-black rounded-xl overflow-hidden mb-6 transition-all duration-500 shadow-2xl">
+       class="relative w-full bg-black rounded-xl overflow-hidden mb-6 transition-all duration-500 shadow-2xl"
+       [class.h-[450px]]="tipoContenido !== 'video'"> <!-- Si es audio, le da un alto fijo al padre -->
 
-        <iframe
-          *ngIf="embedUrl"
-          [src]="embedUrl"
-          width="100%"
-          [height]="tipoContenido === 'video' ? '100%' : '352px'" 
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen">
-        </iframe>
+      <iframe
+       *ngIf="embedUrl"
+       [src]="embedUrl"
+       frameborder="0"
+       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+       class="absolute top-0 left-0 w-full h-full object-cover">
+      </iframe>
 
-        <div *ngIf="!embedUrl" class="flex items-center justify-center h-full text-gray-500">
-          Cargando reproductor...
-        </div>
-      </div>
+    <div *ngIf="!embedUrl" class="flex items-center justify-center absolute inset-0 text-gray-500">
+    Cargando reproductor...
+  </div>
+</div>
 
       <div *ngIf="contenido">
         <h1 class="text-3xl font-bold mb-2">
@@ -66,30 +66,51 @@
     </div>
 
     <div>
-      <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
-        <span class="w-1 h-5 bg-[#C4297D]"></span>
-        Contenido relacionado
-      </h2>
-      <div class="space-y-4">
-        <div
-          *ngFor="let item of relacionados"
-          [routerLink]="['/contenido', item.id]"
-          class="flex gap-3 bg-gray-900/50 rounded-lg p-2 hover:bg-gray-800 transition cursor-pointer border border-transparent hover:border-gray-700 group"
-        >
-          <div class="relative w-32 h-20 flex-shrink-0">
-            <img
-              [src]="item.thumbnail || 'https://picsum.photos/200/120'"
-              class="w-full h-full object-cover rounded shadow-md"
-            />
-            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
-          </div>
-          <div class="flex flex-col justify-center">
-            <p class="text-sm font-semibold leading-tight mb-1 group-hover:text-[#C4297D] transition-colors line-clamp-2">{{ item.titulo }}</p>
-            <p class="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">{{ item.tipo }} • {{ item.fecha_publicacion }}</p>
-          </div>
+  <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
+    <span class="w-1 h-5 bg-[#C4297D]"></span>
+    Contenido relacionado
+  </h2>
+  
+  <div class="space-y-4">
+    
+    <ng-container *ngFor="let item of relacionados; let i = index">
+      <div
+        *ngIf="i < limiteRelacionados"
+        [routerLink]="['/contenido', item.id]"
+        class="flex gap-3 bg-gray-900/50 rounded-lg p-2 hover:bg-gray-800 transition cursor-pointer border border-transparent hover:border-gray-700 group"
+      >
+        <div class="relative w-32 h-20 flex-shrink-0">
+          <img
+            [src]="item.thumbnail || 'https://picsum.photos/200/120'"
+            class="w-full h-full object-cover rounded shadow-md"
+          />
+          <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+        </div>
+        
+        <div class="flex flex-col justify-center">
+          <p class="text-sm font-semibold leading-tight mb-1 group-hover:text-[#C4297D] transition-colors line-clamp-2">
+            {{ item.titulo }}
+          </p>
+          <p class="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">
+            {{ item.tipo }} • {{ item.fecha_publicacion }}
+          </p>
         </div>
       </div>
-    </div>
+    </ng-container>
+
+  </div>
+
+  <div *ngIf="relacionados && relacionados.length > limiteRelacionados" class="mt-4 flex justify-center">
+    <button 
+      type="button"
+      (click)="mostrarMasRelacionados()"
+      class="flex flex-col items-center gap-1 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-[#C4297D] transition-colors duration-200 group py-2 w-full border border-dashed border-gray-800 rounded-lg hover:border-[#C4297D]/50"
+    >
+      <span>Mostrar más relacionados</span>
+      <i class="fa-solid fa-chevron-down animate-bounce mt-1 text-[#C4297D]"></i>
+    </button>
+  </div>
+</div>
 
   </div>
 </div>

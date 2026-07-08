@@ -36,7 +36,14 @@ export class Home implements OnInit {
     this.homeService.getHomeContent().subscribe({
       next: (data: any) => {
         this.hero = data.hero;
-        this.novedades = data.novedades || [];
+        
+        // AJUSTE PUNTO 3: Filtramos las novedades para dejar solo videos
+        // Excluimos explícitamente cualquier contenido cuyo tipo sea 'audio' o 'podcast'
+        const novedadesCrudas = data.novedades || [];
+        this.novedades = novedadesCrudas.filter(
+          (item: any) => item.tipo !== 'audio' && item.tipo !== 'podcast'
+        );
+
         this.eventos = data.eventos || [];
         this.podcasts = data.podcasts || [];
         
