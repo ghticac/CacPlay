@@ -33,9 +33,11 @@ class ContenidoViewSet(viewsets.ModelViewSet):
     # --- 2. DETALLE ---
     def retrieve(self, request, *args, **kwargs):
         contenido = self.get_object()
+        
+        # AJUSTE: Incrementamos el límite a 50 para habilitar el scroll histórico en el frontend
         relacionados = Contenido.objects.filter(
             tipo=contenido.tipo, activo=True
-        ).exclude(id=contenido.id).order_by('-creado')[:6]
+        ).exclude(id=contenido.id).order_by('-creado')[:50]
 
         data = {
             "contenido": ContenidoSerializer(contenido, context={'request': request}).data,

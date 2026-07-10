@@ -17,9 +17,6 @@ export class Contenido implements OnInit {
   embedUrl: SafeResourceUrl | null = null;
   tipoContenido: 'video' | 'audio' | null = null;
   relacionados: any[] = [];
-  
-  // Ajuste Punto 2: Control del límite de contenidos relacionados
-  limiteRelacionados: number = 4;
 
   // Variables de calificación
   rating: number = 0;
@@ -39,22 +36,19 @@ export class Contenido implements OnInit {
       const id = params.get('id');
       this.rating = 0;
       this.hoverRating = 0;
-      this.limiteRelacionados = 4; // Reinicia el límite al cambiar de contenido
 
       this.homeService.getContenidoById(id).subscribe((data: any) => {
         this.contenido = data.contenido;
-        this.relacionados = data.relacionados;
+        
+        // AJUSTE: Cargamos un histórico de hasta 50 ítems para el scroll
+        const arrRelacionados = data.relacionados || [];
+        this.relacionados = arrRelacionados.slice(0, 50);
+
         this.procesarContenido(this.contenido.url_externa);
         this.cdr.detectChanges();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     });
-  }
-
-  // Ajuste Punto 2: Función para el evento clic del botón en el HTML
-  mostrarMasRelacionados(): void {
-    this.limiteRelacionados += 4;
-    this.cdr.detectChanges();
   }
 
   procesarContenido(url: string) {
