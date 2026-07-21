@@ -47,9 +47,8 @@ export class SsoCallback implements OnInit {
       next: (response) => {
         console.log('✅ Login SSO exitoso. Roles y tokens actualizados.');
         
-        // Usamos NgZone para asegurar que Angular detecte el cambio de estado 
-        // y el Router pueda sacarnos de aquí hacia la ruta protegida.
         this.ngZone.run(() => {
+          // Navegamos a la pantalla de inicio dentro del iframe
           this.router.navigate(['/inicio'], { replaceUrl: true });
         });
       },
