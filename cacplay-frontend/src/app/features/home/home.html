@@ -1,5 +1,6 @@
 <div class="bg-black min-h-screen text-white pb-10">
 
+  <!-- HERO BANNER -->
   <section *ngIf="hero" class="relative w-full max-w-[1400px] h-[576px] mx-auto rounded-xl overflow-hidden mb-12">
     <img [src]="hero.thumbnail || 'https://picsum.photos/1600/600'" class="absolute w-full h-full object-cover opacity-40" />
     <div class="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent"></div>
@@ -11,42 +12,56 @@
           Ver ahora
         </a>
         <button 
-        (click)="toggleFavorito(hero)"
-        [ngClass]="hero?.es_favorito ? 'bg-[#C4297D] border-[#C4297D] text-white' : 'border-white hover:bg-white hover:text-black'"
-        class="border px-6 py-3 rounded-lg transition font-bold flex items-center gap-2">
-        <i class="fa-solid" [ngClass]="hero?.es_favorito ? 'fa-check' : 'fa-plus'"></i>
-         {{ hero?.es_favorito ? 'En mi lista' : 'Agregar a mi lista' }}
+          (click)="toggleFavorito(hero)"
+          [ngClass]="hero?.es_favorito ? 'bg-[#C4297D] border-[#C4297D] text-white' : 'border-white hover:bg-white hover:text-black'"
+          class="border px-6 py-3 rounded-lg transition font-bold flex items-center gap-2">
+          <i class="fa-solid" [ngClass]="hero?.es_favorito ? 'fa-check' : 'fa-plus'"></i>
+          {{ hero?.es_favorito ? 'En mi lista' : 'Agregar a mi lista' }}
         </button>
       </div>
     </div>
   </section>
 
-  <div class="max-w-[1400px] mx-auto px-4 space-y-20">
+  <div class="max-w-[1400px] mx-auto px-4 space-y-16">
     
+    <!-- MI LISTA -->
     <section *ngIf="miLista && miLista.length > 0">
       <h2 class="text-2xl font-bold mb-6 text-[#C4297D]">Mi Lista</h2>
-      <swiper-container slides-per-view="1" space-between="20" navigation="true" pagination="true"
-        breakpoints='{"768": {"slidesPerView": 2}, "1024": {"slidesPerView": 3}}'>
+      <swiper-container 
+        slides-per-view="1.2" 
+        space-between="16" 
+        navigation="true" 
+        pagination="true"
+        breakpoints='{"640": {"slidesPerView": 2.2, "spaceBetween": 16}, "1024": {"slidesPerView": 3.8, "spaceBetween": 20}, "1280": {"slidesPerView": 5, "spaceBetween": 20}}'>
         <swiper-slide *ngFor="let item of miLista">
-          <div (click)="goToContent(item)" class="bg-gray-900 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer border border-gray-800 h-full mb-10">
-            <img [src]="item.thumbnail" class="w-full h-56 object-cover" />
-            <div class="p-4">
-              <h3 class="font-semibold text-base">{{ item.titulo }}</h3>
+          <div (click)="goToContent(item)" class="bg-gray-900 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer border border-gray-800 h-full mb-10 flex flex-col">
+            <div class="w-full aspect-[16/9] overflow-hidden bg-gray-950">
+              <img [src]="item.thumbnail" class="w-full h-full object-cover" />
+            </div>
+            <div class="p-3.5 flex-grow">
+              <h3 class="font-semibold text-sm line-clamp-2">{{ item.titulo }}</h3>
             </div>
           </div>
         </swiper-slide>
       </swiper-container>
     </section>
 
+    <!-- NOVEDADES -->
     <section>
       <h2 class="text-2xl font-semibold mb-6">Novedades</h2>
-      <swiper-container slides-per-view="1" space-between="20" navigation="true" pagination="true"
-        breakpoints='{"768": {"slidesPerView": 2}, "1024": {"slidesPerView": 3}}'>
+      <swiper-container 
+        slides-per-view="1.2" 
+        space-between="16" 
+        navigation="true" 
+        pagination="true"
+        breakpoints='{"640": {"slidesPerView": 2.2, "spaceBetween": 16}, "1024": {"slidesPerView": 3.8, "spaceBetween": 20}, "1280": {"slidesPerView": 5, "spaceBetween": 20}}'>
         <swiper-slide *ngFor="let item of novedades">
-          <div (click)="goToContent(item)" class="bg-gray-900 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer border border-gray-800 h-full mb-10">
-            <img [src]="item.thumbnail || 'https://picsum.photos/400/223'" class="w-full h-56 object-cover" />
-            <div class="p-4">
-              <h3 class="font-semibold text-base mb-2">{{ item.titulo }}</h3>
+          <div (click)="goToContent(item)" class="bg-gray-900 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer border border-gray-800 h-full mb-10 flex flex-col">
+            <div class="w-full aspect-[16/9] overflow-hidden bg-gray-950">
+              <img [src]="item.thumbnail || 'https://picsum.photos/400/225'" class="w-full h-full object-cover" />
+            </div>
+            <div class="p-3.5 flex-grow flex flex-col justify-between gap-2">
+              <h3 class="font-semibold text-sm line-clamp-2">{{ item.titulo }}</h3>
               <div class="flex items-center gap-2 text-xs">
                 <span class="text-yellow-400 font-bold">⭐ {{ item.rating_promedio || '0.0' }}</span>
                 <span class="text-gray-500">({{ item.total_votos || 0 }} votos)</span>
@@ -57,15 +72,22 @@
       </swiper-container>
     </section>
 
+    <!-- EVENTOS -->
     <section>
       <h2 class="text-2xl font-semibold mb-6">Eventos</h2>
-      <swiper-container slides-per-view="1" space-between="20" navigation="true" pagination="true"
-        breakpoints='{"768": {"slidesPerView": 2}, "1024": {"slidesPerView": 3}}'>
+      <swiper-container 
+        slides-per-view="1.2" 
+        space-between="16" 
+        navigation="true" 
+        pagination="true"
+        breakpoints='{"640": {"slidesPerView": 2.2, "spaceBetween": 16}, "1024": {"slidesPerView": 3.8, "spaceBetween": 20}, "1280": {"slidesPerView": 5, "spaceBetween": 20}}'>
         <swiper-slide *ngFor="let item of eventos">
-          <div (click)="goToContent(item)" class="bg-gray-900 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer border border-gray-800 h-full mb-10">
-            <img [src]="item.thumbnail || 'https://picsum.photos/400/223'" class="w-full h-56 object-cover" />
-            <div class="p-4">
-              <h3 class="font-semibold text-base mb-2">{{ item.titulo }}</h3>
+          <div (click)="goToContent(item)" class="bg-gray-900 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer border border-gray-800 h-full mb-10 flex flex-col">
+            <div class="w-full aspect-[16/9] overflow-hidden bg-gray-950">
+              <img [src]="item.thumbnail || 'https://picsum.photos/400/225'" class="w-full h-full object-cover" />
+            </div>
+            <div class="p-3.5 flex-grow flex flex-col justify-between gap-2">
+              <h3 class="font-semibold text-sm line-clamp-2">{{ item.titulo }}</h3>
               <div class="flex items-center gap-2 text-xs">
                 <span class="text-yellow-400 font-bold">⭐ {{ item.rating_promedio || '0.0' }}</span>
                 <span class="text-gray-500">({{ item.total_votos || 0 }} votos)</span>
@@ -76,36 +98,33 @@
       </swiper-container>
     </section>
 
+    <!-- PODCASTS -->
     <section *ngIf="podcasts && podcasts.length > 0">
-  <h2 class="text-2xl font-semibold mb-6">Podcasts</h2>
-  
-  <swiper-container 
-    slides-per-view="1" 
-    space-between="20" 
-    navigation="true" 
-    pagination="true"
-    breakpoints='{"768": {"slidesPerView": 2}, "1024": {"slidesPerView": 3}}'
-  >
-    <swiper-slide *ngFor="let item of podcasts">
-      <div (click)="goToContent(item)" class="bg-gray-900 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer border border-gray-800 h-full mb-10 flex flex-col">
-        
-        <div class="relative">
-          <img [src]="item.thumbnail || 'https://picsum.photos/400/223'" class="w-full h-56 object-cover" />
-          <span class="absolute top-3 left-3 bg-[#C4297D] text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider shadow-lg">
-            {{ item.categoria_nombre }}
-          </span>
-        </div>
-
-        <div class="p-4 flex-grow">
-          <h3 class="font-semibold text-base mb-2 line-clamp-2">{{ item.titulo }}</h3>
-          <div class="flex items-center gap-2">
-            <span class="text-xs text-gray-500 italic">Episodio reciente</span>
+      <h2 class="text-2xl font-semibold mb-6">Podcasts</h2>
+      <swiper-container 
+        slides-per-view="1.2" 
+        space-between="16" 
+        navigation="true" 
+        pagination="true"
+        breakpoints='{"640": {"slidesPerView": 2.2, "spaceBetween": 16}, "1024": {"slidesPerView": 3.8, "spaceBetween": 20}, "1280": {"slidesPerView": 5, "spaceBetween": 20}}'>
+        <swiper-slide *ngFor="let item of podcasts">
+          <div (click)="goToContent(item)" class="bg-gray-900 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer border border-gray-800 h-full mb-10 flex flex-col">
+            <div class="relative w-full aspect-[16/9] overflow-hidden bg-gray-950">
+              <img [src]="item.thumbnail || 'https://picsum.photos/400/225'" class="w-full h-full object-cover" />
+              <span class="absolute top-2 left-2 bg-[#C4297D] text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-lg">
+                {{ item.categoria_nombre }}
+              </span>
+            </div>
+            <div class="p-3.5 flex-grow flex flex-col justify-between gap-2">
+              <h3 class="font-semibold text-sm line-clamp-2">{{ item.titulo }}</h3>
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] text-gray-400 italic">Episodio reciente</span>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </swiper-slide>
-  </swiper-container>
-</section>
+        </swiper-slide>
+      </swiper-container>
+    </section>
 
   </div>
 </div>
