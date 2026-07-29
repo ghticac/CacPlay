@@ -56,6 +56,14 @@
         <span class="absolute top-2 right-2 w-2 h-2 bg-[#C4297D] rounded-full border border-black"></span>
       </button>
 
+      <!-- Botón Pantalla Completa dentro del Navbar de Angular -->
+      <button 
+        (click)="toggleFullScreen()" 
+        class="text-gray-400 hover:text-white transition p-2 flex items-center justify-center"
+        title="Pantalla Completa">
+        <i class="fa-solid" [ngClass]="esPantallaCompleta ? 'fa-compress' : 'fa-expand'"></i>
+      </button>
+
       <!-- Botón Cerrar Sesión Desktop -->
       <div class="hidden sm:flex items-center">
         <button 
