@@ -1,0 +1,194 @@
+name: Deploy PROD
+
+on:
+  workflow_dispatch:
+    inputs:
+      bootstrap_catalog:
+        description: Importar el catálogo inicial de TEST en una base PROD vacía
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy CACPlay PROD
+    if: github.ref == 'refs/heads/main'
+    runs-on:
+      - self-hosted
+      - linux
+      - cacplay-prod
+    environment:
+      name: production
+      url: https://cacplay.cuentadealtocosto.org
+    env:
+      CACPLAY_PROD_ENV_FILE: /opt/cacplay-prod/.env
+      CACPLAY_PROD_STATE_DIR: /opt/cacplay-prod/state
+      CACPLAY_PROD_BACKUP_DIR: /opt/cacplay-prod/backups
+      CACPLAY_PROD_BOOTSTRAP_FILE: /opt/cacplay-prod/bootstrap/contenidos.json
+      CACPLAY_IMAGE_TAG: ${{ github.sha }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate release and PROD environment
+        run: |
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -f "$CACPLAY_PROD_ENV_FILE"
+          test -r "$CACPLAY_PROD_ENV_FILE"
+          test -d "$CACPLAY_PROD_STATE_DIR"
+          test -w "$CACPLAY_PROD_STATE_DIR"
+          test -d "$CACPLAY_PROD_BACKUP_DIR"
+          test -w "$CACPLAY_PROD_BACKUP_DIR"
+          docker --version
+          docker compose version
+          docker compose \
+            -p cacplay-prod \
+            --env-file "$CACPLAY_PROD_ENV_FILE" \
+            -f docker-compose.prod.yml \
+            config --quiet
+
+      - name: Read previous release
+        id: previous
+        run: |
+          previous_sha=""
+          if test -f "$CACPLAY_PROD_STATE_DIR/current-sha"; then
+            previous_sha="$(tr -d '\r\n' < "$CACPLAY_PROD_STATE_DIR/current-sha")"
+            if [[ ! "$previous_sha" =~ ^[0-9a-f]{40}$ ]]; then
+              echo "Ignoring invalid previous release marker"
+              previous_sha=""
+            fi
+          fi
+          echo "sha=$previous_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Back up current SQLite database
+        run: |
+          backend_container="cacplay-prod-backend-1"
+          if docker inspect "$backend_container" >/dev/null 2>&1; then
+            backup_name="db-$(date -u +%Y%m%dT%H%M%SZ)-${GITHUB_SHA:0:12}.sqlite3"
+            docker exec "$backend_container" python -c \
+              'import sqlite3, sys; source = sqlite3.connect("/data/db.sqlite3"); target = sqlite3.connect(sys.argv[1]); source.backup(target); target.close(); source.close()' \
+              "/tmp/$backup_name"
+            docker cp "$backend_container:/tmp/$backup_name" "$CACPLAY_PROD_BACKUP_DIR/$backup_name"
+            docker exec "$backend_container" python -c \
+              'import os, sys; os.remove(sys.argv[1])' \
+              "/tmp/$backup_name"
+            test -s "$CACPLAY_PROD_BACKUP_DIR/$backup_name"
+          else
+            echo "First deployment: no existing PROD database to back up"
+          fi
+
+      - name: Build release images
+        run: |
+          docker compose \
+            -p cacplay-prod \
+            --env-file "$CACPLAY_PROD_ENV_FILE" \
+            -f docker-compose.prod.yml \
+            build --pull
+
+      - name: Deploy release
+        run: |
+          docker compose \
+            -p cacplay-prod \
+            --env-file "$CACPLAY_PROD_ENV_FILE" \
+            -f docker-compose.prod.yml \
+            up -d --no-build --remove-orphans
+
+      - name: Verify local health
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent --show-error http://127.0.0.1:8088/api/health/; then
+              exit 0
+            fi
+            echo "Waiting for local health endpoint... attempt $attempt"
+            sleep 5
+          done
+          exit 1
+
+      - name: Bootstrap catalog
+        if: ${{ inputs.bootstrap_catalog }}
+        run: |
+          test -f "$CACPLAY_PROD_BOOTSTRAP_FILE"
+          test -r "$CACPLAY_PROD_BOOTSTRAP_FILE"
+
+          fixture_count="$(python3 -c \
+            'import json, sys; data = json.load(open(sys.argv[1], encoding="utf-8")); assert all(item.get("model") == "contenidos.contenido" for item in data); print(len(data))' \
+            "$CACPLAY_PROD_BOOTSTRAP_FILE")"
+          test "$fixture_count" -gt 0
+
+          current_count="$(docker exec cacplay-prod-backend-1 python -c \
+            'import os; os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings"); import django; django.setup(); from contenidos.models import Contenido; print(Contenido.objects.count())')"
+          test "$current_count" -eq 0
+
+          docker cp "$CACPLAY_PROD_BOOTSTRAP_FILE" \
+            cacplay-prod-backend-1:/tmp/cacplay-contenidos.json
+          docker exec cacplay-prod-backend-1 \
+            python manage.py loaddata /tmp/cacplay-contenidos.json
+          docker exec cacplay-prod-backend-1 python -c \
+            'import os; os.remove("/tmp/cacplay-contenidos.json")'
+
+          imported_count="$(docker exec cacplay-prod-backend-1 python -c \
+            'import os; os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings"); import django; django.setup(); from contenidos.models import Contenido; print(Contenido.objects.count())')"
+          test "$imported_count" -eq "$fixture_count"
+          echo "Imported $imported_count catalog records"
+
+      - name: Verify public endpoint
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent --show-error \
+              https://cacplay.cuentadealtocosto.org/api/health/; then
+              exit 0
+            fi
+            echo "Waiting for public endpoint... attempt $attempt"
+            sleep 5
+          done
+          exit 1
+
+      - name: Record successful release
+        run: |
+          printf '%s\n' "$GITHUB_SHA" > "$CACPLAY_PROD_STATE_DIR/current-sha"
+          {
+            echo "### CACPlay PROD deployed"
+            echo
+            echo "- Commit: \`$GITHUB_SHA\`"
+            echo "- URL: https://cacplay.cuentadealtocosto.org"
+            echo "- Catalog bootstrap: \`${{ inputs.bootstrap_catalog }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Roll back application images
+        if: failure() && steps.previous.outputs.sha != ''
+        env:
+          PREVIOUS_SHA: ${{ steps.previous.outputs.sha }}
+        run: |
+          docker image inspect "cacplay-prod-backend:$PREVIOUS_SHA" >/dev/null
+          docker image inspect "cacplay-prod-frontend:$PREVIOUS_SHA" >/dev/null
+          CACPLAY_IMAGE_TAG="$PREVIOUS_SHA" docker compose \
+            -p cacplay-prod \
+            --env-file "$CACPLAY_PROD_ENV_FILE" \
+            -f docker-compose.prod.yml \
+            up -d --no-build --force-recreate --remove-orphans
+          curl --fail --silent --show-error \
+            --retry 20 --retry-delay 5 --retry-connrefused \
+            http://127.0.0.1:8088/api/health/
+
+      - name: Deployment diagnostics
+        if: failure()
+        run: |
+          docker compose \
+            -p cacplay-prod \
+            --env-file "$CACPLAY_PROD_ENV_FILE" \
+            -f docker-compose.prod.yml \
+            ps
+          docker compose \
+            -p cacplay-prod \
+            --env-file "$CACPLAY_PROD_ENV_FILE" \
+            -f docker-compose.prod.yml \
+            logs --tail 100
