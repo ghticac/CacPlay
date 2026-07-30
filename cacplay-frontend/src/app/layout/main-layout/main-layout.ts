@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterModule, Router } from '@angular/router'; 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
+import { AuthService } from '../../core/services/auth';
 
 @Component({
   selector: 'app-main-layout',
@@ -12,16 +13,15 @@ import { FormsModule } from '@angular/forms';
 })
 export class MainLayout {
   
-  // 1. Variables de estado para los menús (Coincide exactamente con el HTML)
   menuAbierto = false; 
-  podcastOpen = false; // Por si algún botón aún lo usa en el HTML
-
-  // 2. Variable para capturar la búsqueda
+  podcastOpen = false;
   termino: string = ''; 
 
-  constructor(private router: Router) {} 
+  constructor(
+    private router: Router,
+    public authService: AuthService
+  ) {} 
 
-  // 3. Control de los desplegables (Perfil/Mobile)
   toggleMenu() {
     this.menuAbierto = !this.menuAbierto;
   }
@@ -30,18 +30,50 @@ export class MainLayout {
     this.podcastOpen = !this.podcastOpen;
   }
 
-  // 4. Lógica del Buscador
   onSearch() {
     if (this.termino.trim()) {
-      // Navega a /buscar?q=...
       this.router.navigate(['/buscar'], { queryParams: { q: this.termino } });
     }
   }
 
-  // 5. Salida segura
   logout() {
-    localStorage.removeItem('access');
-    localStorage.removeItem('refresh');
+    this.authService.logout();
     window.location.href = '/intro';
   }
+
+
+  // Agregamos el estado para cambiar el ícono (expandir / comprimir)
+esPantallaCompleta: boolean = false;
+
+toggleFullScreen() {
+  const doc = document as any;
+  const docEl = document.documentElement as any;
+
+  if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+    // Entrar a pantalla completa
+    if (docEl.requestFullscreen) {
+      docEl.requestFullscreen();
+    } else if (docEl.msRequestFullscreen) {
+      docEl.msRequestFullscreen();
+    } else if (docEl.mozRequestFullScreen) {
+      docEl.mozRequestFullScreen();
+    } else if (docEl.webkitRequestFullscreen) {
+      docEl.webkitRequestFullscreen();
+    }
+    this.esPantallaCompleta = true;
+  } else {
+    // Salir de pantalla completa
+    if (doc.exitFullscreen) {
+      doc.exitFullscreen();
+    } else if (doc.msExitFullscreen) {
+      doc.msExitFullscreen();
+    } else if (doc.mozCancelFullScreen) {
+      doc.mozCancelFullScreen();
+    } else if (doc.webkitExitFullscreen) {
+      doc.webkitExitFullscreen();
+    }
+    this.esPantallaCompleta = false;
+  }
+}
+
 }

@@ -42,6 +42,12 @@ export class LoginComponent {
 
     this.authService.login(email, password).subscribe({
       next: () => {
+        // 💡 PUENTE TEMPORAL PARA PRUEBAS LOCALES: 
+        // Forzamos el rol VIP si el correo pertenece a los dominios autorizados
+        if (email.endsWith('@elevates.com.co') || email.endsWith('@cuentadealtocosto.org')) {
+          localStorage.setItem('user_role', 'vip');
+        }
+
         this.router.navigate(['/inicio']);
         this.loading = false;
       },

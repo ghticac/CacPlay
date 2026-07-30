@@ -1,5 +1,4 @@
 *.zip
-*.rar
 Plataforma de Streaming/
 streamm.jpg
 .DS_Store
@@ -7,3 +6,40 @@ Thumbs.db
 files/
 img/
 compactadoCACPlay/
+<<<<<<< HEAD
+compactadoCACPlay.rar
+=======
+
+# Variables locales
+.env
+**/.env
+
+# Python / Django
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.mypy_cache/
+*.sqlite3
+db.sqlite3
+staticfiles/
+**/staticfiles/
+
+# Entornos virtuales
+.venv/
+venv/
+cacplay-backend/.venv/
+cacplay-backend/venv/
+
+# Node / Angular
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.angular/
+**/.angular/
+
+# Logs y temporales
+*.log
+tmp/
+temp/
+>>>>>>> 4a1a737141d61515a08a75fb2a2416abf6fcddef

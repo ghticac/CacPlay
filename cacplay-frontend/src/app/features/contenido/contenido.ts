@@ -17,7 +17,7 @@ export class Contenido implements OnInit {
   embedUrl: SafeResourceUrl | null = null;
   tipoContenido: 'video' | 'audio' | null = null;
   relacionados: any[] = [];
-  
+
   // Variables de calificación
   rating: number = 0;
   hoverRating: number = 0;
@@ -39,7 +39,11 @@ export class Contenido implements OnInit {
 
       this.homeService.getContenidoById(id).subscribe((data: any) => {
         this.contenido = data.contenido;
-        this.relacionados = data.relacionados;
+        
+        // AJUSTE: Cargamos un histórico de hasta 50 ítems para el scroll
+        const arrRelacionados = data.relacionados || [];
+        this.relacionados = arrRelacionados.slice(0, 50);
+
         this.procesarContenido(this.contenido.url_externa);
         this.cdr.detectChanges();
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -48,39 +52,37 @@ export class Contenido implements OnInit {
   }
 
   procesarContenido(url: string) {
-  if (!url) return;
+    if (!url) return;
 
-  // 1. Lógica para YouTube
-  if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    this.tipoContenido = 'video';
-    const videoId = this.extractYoutubeId(url);
-    this.embedUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-      `https://www.youtube.com/embed/${videoId}`
-    );
-  } 
-  // 2. Lógica para Spotify
-  else if (url.includes('spotify.com')) {
-    this.tipoContenido = 'audio';
-    let spotifyUrl = url;
-    if (!spotifyUrl.includes('/embed/')) {
-      spotifyUrl = spotifyUrl.replace('open.spotify.com/', 'open.spotify.com/embed/');
+    // 1. Lógica para YouTube
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      this.tipoContenido = 'video';
+      const videoId = this.extractYoutubeId(url);
+      this.embedUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+        `https://www.youtube.com/embed/${videoId}`
+      );
+    } 
+    // 2. Lógica para Spotify
+    else if (url.includes('spotify.com')) {
+      this.tipoContenido = 'audio';
+      let spotifyUrl = url;
+      if (!spotifyUrl.includes('/embed/')) {
+        spotifyUrl = spotifyUrl.replace('open.spotify.com/', 'open.spotify.com/embed/');
+      }
+      this.embedUrl = this.sanitizer.bypassSecurityTrustResourceUrl(spotifyUrl);
     }
-    this.embedUrl = this.sanitizer.bypassSecurityTrustResourceUrl(spotifyUrl);
-  }
-  // 3. NUEVA Lógica para Cloudflare Stream
-  else if (url.includes('videodelivery.net') || url.includes('cloudflarestream.com')) {
-    this.tipoContenido = 'video';
-    let cloudflareUrl = url;
-    
-    // Si la URL no tiene el sufijo /iframe, se lo añadimos para asegurar que cargue el reproductor
-    if (!cloudflareUrl.includes('/iframe')) {
-      // Eliminamos slash final si existe y agregamos /iframe
-      cloudflareUrl = cloudflareUrl.replace(/\/$/, '') + '/iframe';
+    // 3. NUEVA Lógica para Cloudflare Stream
+    else if (url.includes('videodelivery.net') || url.includes('cloudflarestream.com')) {
+      this.tipoContenido = 'video';
+      let cloudflareUrl = url;
+      
+      if (!cloudflareUrl.includes('/iframe')) {
+        cloudflareUrl = cloudflareUrl.replace(/\/$/, '') + '/iframe';
+      }
+      
+      this.embedUrl = this.sanitizer.bypassSecurityTrustResourceUrl(cloudflareUrl);
     }
-    
-    this.embedUrl = this.sanitizer.bypassSecurityTrustResourceUrl(cloudflareUrl);
   }
-}
 
   extractYoutubeId(url: string) {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -89,34 +91,33 @@ export class Contenido implements OnInit {
   }
 
   toggleFavorito() {
-  console.log('Botón presionado. Estado actual de contenido:', this.contenido);
+    console.log('Botón presionado. Estado actual de contenido:', this.contenido);
 
-  if (!this.contenido) {
-    console.error('❌ Error: this.contenido está vacío.');
-    return;
-  }
-
-  if (!this.contenido.id) {
-    console.error('❌ Error: El contenido no tiene ID:', this.contenido);
-    return;
-  }
-
-  console.log('🚀 Enviando ID a favoritos:', this.contenido.id);
-
-  this.homeService.toggleFavorito(this.contenido.id).subscribe({
-    next: (res: any) => {
-      this.contenido.es_favorito = res.favorito;
-      this.cdr.detectChanges();
-      console.log('✅ Éxito al actualizar favorito');
-    },
-    error: (err: any) => {
-      console.error("🔴 Error real del servidor:", err);
-      // Imprime el error completo para ver si es un 401 o 500
-      console.log("Status del error:", err.status); 
-      alert('No fue posible agregar el contenido a Mi Lista');
+    if (!this.contenido) {
+      console.error('❌ Error: this.contenido está vacío.');
+      return;
     }
-  });
-}
+
+    if (!this.contenido.id) {
+      console.error('❌ Error: El contenido no tiene ID:', this.contenido);
+      return;
+    }
+
+    console.log('🚀 Enviando ID a favoritos:', this.contenido.id);
+
+    this.homeService.toggleFavorito(this.contenido.id).subscribe({
+      next: (res: any) => {
+        this.contenido.es_favorito = res.favorito;
+        this.cdr.detectChanges();
+        console.log('✅ Éxito al actualizar favorito');
+      },
+      error: (err: any) => {
+        console.error("🔴 Error real del servidor:", err);
+        console.log("Status del error:", err.status); 
+        alert('No fue posible agregar el contenido a Mi Lista');
+      }
+    });
+  }
 
   setRating(value: number) {
     this.rating = value;

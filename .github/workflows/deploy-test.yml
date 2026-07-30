@@ -1,0 +1,46 @@
+name: Deploy TEST
+
+on:
+  push:
+    branches:
+      - test
+
+concurrency:
+  group: deploy-test
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy CACPlay TEST
+    runs-on:
+      - self-hosted
+      - linux
+      - cacplay-test
+    env:
+      CACPLAY_TEST_ENV_FILE: /opt/cacplay-test/.env
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Validate TEST environment
+        run: |
+          test -f "$CACPLAY_TEST_ENV_FILE"
+          cp "$CACPLAY_TEST_ENV_FILE" .env
+          docker --version
+          docker compose version
+
+      - name: Deploy stack
+        run: |
+          docker compose -p cacplay-test --env-file .env -f docker-compose.test.yml up -d --build --remove-orphans
+
+      - name: Verify backend health
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent --show-error http://127.0.0.1:8088/api/health/; then
+              exit 0
+            fi
+            echo "Waiting for health endpoint... attempt $attempt"
+            sleep 5
+          done
+          exit 1

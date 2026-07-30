@@ -36,13 +36,27 @@ export class Home implements OnInit {
     this.homeService.getHomeContent().subscribe({
       next: (data: any) => {
         this.hero = data.hero;
-        this.novedades = data.novedades || [];
+        
+        // 🚨 CAMBIO TEMPORAL: Vamos a inspeccionar qué llega exactamente de la API
+        console.log('--- DATOS CRUDOS DE NOVEDADES ---', data.novedades);
+        if (data.novedades && data.novedades.length > 0) {
+          console.log('--- PRIMER ITEM DE NOVEDADES ---', data.novedades[0]);
+        }
+
+        const novedadesCrudas = data.novedades || [];
+        this.novedades = novedadesCrudas.filter((item: any) => {
+          if (!item) return false;
+          const tipo = item.tipo ? String(item.tipo).toLowerCase() : '';
+          const categoria = item.categoria ? String(item.categoria).toLowerCase() : '';
+          return tipo !== 'audio' && tipo !== 'podcast' && categoria !== 'podcast';
+        });
+
+        // Verificamos cuántos items quedaron tras aplicar el filtro actual
+        console.log('--- NOVEDADES FILTRADAS (RESULTADO) ---', this.novedades);
+
         this.eventos = data.eventos || [];
         this.podcasts = data.podcasts || [];
-        
-        // Cargamos Mi Lista inicialmente
         this.actualizarMiLista();
-
         this.cdr.detectChanges();
       },
       error: (err: any) => console.error('Error al obtener contenido:', err)

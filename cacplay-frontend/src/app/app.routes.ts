@@ -57,6 +57,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/contenido/contenido').then(m => m.Contenido)
       },
+      // 🔒 NUEVA SECCIÓN PRIVADA (Solo para usuarios VIP)
+      {
+        path: 'contenido-privado',
+        loadComponent: () =>
+          import('./features/contenido-privado/contenido-privado').then(m => m.ContenidoPrivado)
+      },
       {
         path: 'podcast/la-cac-contigo',
         loadComponent: () =>

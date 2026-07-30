@@ -1,7 +1,24 @@
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token  # <-- Cambiamos JWT por el Token de tu imagen
 from django.contrib.auth import authenticate
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import Usuario
+
+
+class EmailJWTTokenObtainSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        username = attrs.get(self.username_field)
+
+        if username and '@' in username:
+            try:
+                attrs[self.username_field] = Usuario.objects.get(email__iexact=username).username
+            except Usuario.DoesNotExist:
+                pass
+
+        data = super().validate(attrs)
+        data['email'] = self.user.email
+        data['rol'] = self.user.rol
+        return data
 
 class EmailTokenObtainSerializer(serializers.Serializer):
     # Definimos 'username' como el campo que recibirá el correo desde Angular

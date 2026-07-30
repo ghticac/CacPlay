@@ -18,9 +18,9 @@ class ContenidoViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], permission_classes=[AllowAny])
     def home(self, request):
         hero = Contenido.objects.filter(tipo='video', activo=True).order_by('-creado').first()
-        novedades = Contenido.objects.filter(activo=True).order_by('-creado')[:12]
-        eventos = Contenido.objects.filter(categoria='eventos', activo=True).order_by('-creado')[:12]
-        podcasts = Contenido.objects.filter(tipo='podcast', activo=True).order_by('?')[:12]
+        novedades = Contenido.objects.filter(activo=True).order_by('-creado')[:1000]
+        eventos = Contenido.objects.filter(categoria='eventos', activo=True).order_by('-creado')[:1000]
+        podcasts = Contenido.objects.filter(tipo='podcast', activo=True).order_by('?')[:1000]
 
         data = {
             "hero": ContenidoSerializer(hero, context={'request': request}).data if hero else None,
@@ -33,9 +33,11 @@ class ContenidoViewSet(viewsets.ModelViewSet):
     # --- 2. DETALLE ---
     def retrieve(self, request, *args, **kwargs):
         contenido = self.get_object()
+        
+        # AJUSTE: Incrementamos el límite a 50 para habilitar el scroll histórico en el frontend
         relacionados = Contenido.objects.filter(
             tipo=contenido.tipo, activo=True
-        ).exclude(id=contenido.id).order_by('-creado')[:6]
+        ).exclude(id=contenido.id).order_by('-creado')[:50]
 
         data = {
             "contenido": ContenidoSerializer(contenido, context={'request': request}).data,
