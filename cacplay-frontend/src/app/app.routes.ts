@@ -59,14 +59,19 @@ export const routes: Routes = [
       },
       // 🔒 NUEVA SECCIÓN PRIVADA (Solo para usuarios VIP)
       {
-        path: 'contenido-privado',
+        path: 'exclusivo',
         loadComponent: () =>
-          import('./features/contenido-privado/contenido-privado').then(m => m.ContenidoPrivado)
+          import('./features/exclusivo/exclusivo').then(m => m.Exclusivo)
       },
       {
         path: 'podcast/la-cac-contigo',
         loadComponent: () =>
           import('./features/podcast/la-cac-contigo/la-cac-contigo').then(m => m.LaCacContigo)
+      },
+      {
+        path: 'podcast/del-libro-a-tu-oido',
+        loadComponent: () =>
+          import('./features/podcast/del-libro-a-tu-oido/del-libro-a-tu-oido').then(m => m.DelLibroATuOido)
       },
       {
         path: '',

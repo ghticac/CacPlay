@@ -20,6 +20,24 @@ export class HomeService {
     return this.http.get(`${this.baseUrl}/home/`);
   }
 
+  // --- NUEVOS MÉTODOS DE SECCIONES ---
+
+  /**
+   * Obtiene únicamente los audios/podcasts de la sección "Del libro a tu oído"
+   */
+  getDelLibroATuOido(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/del-libro-a-tu-oido/`);
+  }
+
+  /**
+   * Obtiene los contenidos reservados para la sección VIP
+   */
+  getExclusivo(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/exclusivo/`);
+  }
+
+  // -----------------------------------
+
   getContenidoById(id: any): Observable<any> {
     return this.http.get(`${this.baseUrl}/${id}/`);
   }

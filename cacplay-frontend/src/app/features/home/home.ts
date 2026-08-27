@@ -4,6 +4,7 @@ import { HomeService } from '../../services/home';
 import { RouterModule, Router } from '@angular/router';
 import { register } from 'swiper/element/bundle';
 
+// Registrar componentes personalizados de Swiper (<swiper-container>)
 register();
 
 @Component({
@@ -37,7 +38,6 @@ export class Home implements OnInit {
       next: (data: any) => {
         this.hero = data.hero;
         
-        // 🚨 CAMBIO TEMPORAL: Vamos a inspeccionar qué llega exactamente de la API
         console.log('--- DATOS CRUDOS DE NOVEDADES ---', data.novedades);
         if (data.novedades && data.novedades.length > 0) {
           console.log('--- PRIMER ITEM DE NOVEDADES ---', data.novedades[0]);
@@ -51,12 +51,12 @@ export class Home implements OnInit {
           return tipo !== 'audio' && tipo !== 'podcast' && categoria !== 'podcast';
         });
 
-        // Verificamos cuántos items quedaron tras aplicar el filtro actual
         console.log('--- NOVEDADES FILTRADAS (RESULTADO) ---', this.novedades);
 
         this.eventos = data.eventos || [];
         this.podcasts = data.podcasts || [];
         this.actualizarMiLista();
+        
         this.cdr.detectChanges();
       },
       error: (err: any) => console.error('Error al obtener contenido:', err)
@@ -82,17 +82,12 @@ export class Home implements OnInit {
     
     this.homeService.toggleFavorito(item.id).subscribe({
       next: (res: any) => {
-        // 1. Actualizamos el estado del botón en el Hero
         item.es_favorito = res.favorito;
-        
-        // 2. Refrescamos la fila de "Mi Lista" para que el cambio sea instantáneo
         this.actualizarMiLista();
-        
         console.log('Estado favorito Hero:', item.es_favorito);
       },
       error: (err: any) => {
         console.error('Error en Hero favorito:', err);
-        // Mensaje unificado para toda la app
         alert('No fue posible agregar el contenido a Mi Lista');
       }
     });

@@ -18,7 +18,7 @@ export class AuthService {
   private readonly API_URL = environment.apiUrl;
   private readonly ACCESS_KEY = 'access_token';
   private readonly REFRESH_KEY = 'refresh_token';
-  private readonly USER_ROLE = 'user_role'; // Para persistir el rol sin llamar a perfil
+  private readonly USER_ROLE = 'user_role';
 
   constructor(private http: HttpClient) {}
 

@@ -15,10 +15,7 @@ export class App implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    // Aquí la app arranca limpia. 
-    // No busca tokens en la URL ni escucha mensajes del iFrame.
     console.log('🚀 CACPlay inicializada en modo estándar.');
   }
 
-  // Se eliminaron HostListener y procesarLoginSSO para evitar conflictos de sesión
 }
