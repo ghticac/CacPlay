@@ -25,7 +25,7 @@ export class DelLibroATuOido implements OnInit {
         const basePodcasts = data.podcasts || [];
 
         // 2. Filtramos por el campo técnico 'seccion'
-        this.episodios = basePodcasts.filter((item: any) => 
+        this.episodios = basePodcasts.filter((item: any) =>
           item.seccion === 'del_libro_a_tu_oido'
         );
 

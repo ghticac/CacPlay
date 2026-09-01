@@ -6,9 +6,7 @@ Thumbs.db
 files/
 img/
 compactadoCACPlay/
-<<<<<<< HEAD
 compactadoCACPlay.rar
-=======
 
 # Variables locales
 .env
@@ -42,4 +40,3 @@ dist/
 *.log
 tmp/
 temp/
->>>>>>> 4a1a737141d61515a08a75fb2a2416abf6fcddef

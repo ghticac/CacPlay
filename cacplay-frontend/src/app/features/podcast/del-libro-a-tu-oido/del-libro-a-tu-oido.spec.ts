@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { DelLibroATuOido } from './del-libro-a-tu-oido';
 
 describe('DelLibroATuOidoComponent', () => {
@@ -12,7 +13,8 @@ describe('DelLibroATuOidoComponent', () => {
       imports: [DelLibroATuOido],
       providers: [
         provideHttpClient(),
-        provideHttpClientTesting()
+        provideHttpClientTesting(),
+        provideZonelessChangeDetection()
       ]
     })
     .compileComponents();

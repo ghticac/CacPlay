@@ -56,7 +56,7 @@ export class Home implements OnInit {
         this.eventos = data.eventos || [];
         this.podcasts = data.podcasts || [];
         this.actualizarMiLista();
-        
+
         this.cdr.detectChanges();
       },
       error: (err: any) => console.error('Error al obtener contenido:', err)

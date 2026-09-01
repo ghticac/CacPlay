@@ -1,4 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
 
 import { Busqueda } from './busqueda';
 
@@ -8,7 +12,13 @@ describe('Busqueda', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Busqueda]
+      imports: [Busqueda],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+        provideZonelessChangeDetection()
+      ]
     })
     .compileComponents();
 

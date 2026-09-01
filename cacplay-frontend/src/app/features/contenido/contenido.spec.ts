@@ -1,4 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
 
 import { Contenido } from './contenido';
 
@@ -8,7 +12,13 @@ describe('Contenido', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Contenido]
+      imports: [Contenido],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+        provideZonelessChangeDetection()
+      ]
     })
     .compileComponents();
 

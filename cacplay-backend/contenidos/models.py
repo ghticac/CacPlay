@@ -27,10 +27,10 @@ class Contenido(models.Model):
 
     SECCION_CHOICES = [
         ('cac_contigo', 'La CAC Contigo'),
-        ('un_dia_con', 'Un día con'), 
+        ('un_dia_con', 'Un día con'),
         ('del_libro_a_tu_oido', 'Del libro a tu oído'),
         ('exclusivo', 'Exclusivo')  # Esta opción es para contenido que no se muestra en la web
-        
+
     ]
 
     titulo = models.CharField(max_length=200)

@@ -1,13 +1,22 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 
-import { Home } from './home';
+import { HomeService } from './home';
 
-describe('Home', () => {
-  let service: Home;
+describe('HomeService', () => {
+  let service: HomeService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Home);
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideZonelessChangeDetection()
+      ]
+    });
+    service = TestBed.inject(HomeService);
   });
 
   it('should be created', () => {
