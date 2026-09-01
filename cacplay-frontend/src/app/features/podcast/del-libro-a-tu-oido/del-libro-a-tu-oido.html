@@ -1,0 +1,22 @@
+<div class="bg-gray-950 min-h-screen">
+  
+  <!-- Grilla de episodios cuando existen datos -->
+  <app-contenido-grilla 
+    *ngIf="episodios.length > 0"
+    [titulo]="'Del libro a tu oído'" 
+    [contenidos]="episodios">
+  </app-contenido-grilla>
+
+  <!-- Loader mientras responde la API -->
+  <div *ngIf="cargando" class="flex justify-center items-center py-40">
+    <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-[#C4297D]"></div>
+  </div>
+
+  <!-- Estado vacío si no hay episodios registrados -->
+  <div *ngIf="!cargando && episodios.length === 0" class="text-center py-40">
+    <p class="text-gray-600 text-sm uppercase tracking-widest font-bold">
+      No hay episodios disponibles en esta sección
+    </p>
+  </div>
+
+</div>

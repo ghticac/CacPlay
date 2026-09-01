@@ -32,6 +32,7 @@
         space-between="16" 
         navigation="true" 
         pagination="true"
+        pagination-clickable="true"
         breakpoints='{"640": {"slidesPerView": 2.2, "spaceBetween": 16}, "1024": {"slidesPerView": 3.8, "spaceBetween": 20}, "1280": {"slidesPerView": 5, "spaceBetween": 20}}'>
         <swiper-slide *ngFor="let item of miLista">
           <div (click)="goToContent(item)" class="bg-gray-900 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer border border-gray-800 h-full mb-10 flex flex-col">
@@ -54,6 +55,7 @@
         space-between="16" 
         navigation="true" 
         pagination="true"
+        pagination-clickable="true"
         breakpoints='{"640": {"slidesPerView": 2.2, "spaceBetween": 16}, "1024": {"slidesPerView": 3.8, "spaceBetween": 20}, "1280": {"slidesPerView": 5, "spaceBetween": 20}}'>
         <swiper-slide *ngFor="let item of novedades">
           <div (click)="goToContent(item)" class="bg-gray-900 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer border border-gray-800 h-full mb-10 flex flex-col">
@@ -80,6 +82,7 @@
         space-between="16" 
         navigation="true" 
         pagination="true"
+        pagination-clickable="true"
         breakpoints='{"640": {"slidesPerView": 2.2, "spaceBetween": 16}, "1024": {"slidesPerView": 3.8, "spaceBetween": 20}, "1280": {"slidesPerView": 5, "spaceBetween": 20}}'>
         <swiper-slide *ngFor="let item of eventos">
           <div (click)="goToContent(item)" class="bg-gray-900 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer border border-gray-800 h-full mb-10 flex flex-col">
@@ -106,6 +109,7 @@
         space-between="16" 
         navigation="true" 
         pagination="true"
+        pagination-clickable="true"
         breakpoints='{"640": {"slidesPerView": 2.2, "spaceBetween": 16}, "1024": {"slidesPerView": 3.8, "spaceBetween": 20}, "1280": {"slidesPerView": 5, "spaceBetween": 20}}'>
         <swiper-slide *ngFor="let item of podcasts">
           <div (click)="goToContent(item)" class="bg-gray-900 rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer border border-gray-800 h-full mb-10 flex flex-col">

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ContenidoPrivado } from './contenido-privado';
+import { Exclusivo } from './exclusivo';
 
-describe('ContenidoPrivado', () => {
-  let component: ContenidoPrivado;
-  let fixture: ComponentFixture<ContenidoPrivado>;
+describe('Exclusivo', () => {
+  let component: Exclusivo;
+  let fixture: ComponentFixture<Exclusivo>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ContenidoPrivado]
+      imports: [Exclusivo]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ContenidoPrivado);
+    fixture = TestBed.createComponent(Exclusivo);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
